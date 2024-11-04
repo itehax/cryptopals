@@ -67,7 +67,7 @@ for c in s:
         pass
 
 sorted_by_values = dict(sorted(matches.items(), key=lambda item: item[1]))
-
+print(len(sorted_by_values))
 for count,(k,v) in enumerate(sorted_by_values.items()):
     if count < 3:
         print("{} - {}".format(k,v))
