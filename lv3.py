@@ -70,8 +70,7 @@ def get_best_matches(input, n=3):
         except Exception as error:
             pass
 
-    sorted_by_percentage = dict(sorted(matches.items(), key=lambda item: item[1]))
-    return dict(list(sorted_by_percentage.items())[:n])
+    return dict(sorted(matches.items(), key=lambda item: item[1])[:n])
 
 
 if __name__ == "__main__":
