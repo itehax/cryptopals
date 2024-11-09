@@ -1,4 +1,5 @@
 import base64
+from itertools import combinations
 from pwn import *
 from lv3 import get_best_matches
 from lv5 import rep_xor
@@ -10,10 +11,14 @@ def compute_edit_distance(str1, str2):
 
 
 def guess_keys_size(text, n=3):
-    #update for best match (4th)
+    #understeand ksiski
     guessed_key = {}  # key=key,val=hamming_dist
     for key in range(1, math.floor(len(text) / 4) + 1):
-        guessed_key[key] = compute_edit_distance(text[0:key], text[key : key * 2]) / key + compute_edit_distance(text[key*2:key*3],text[key*3:key*4]) /key
+        chunks = [
+            text[0:key], text[key : key * 2],
+            text[key*2:key*3], text[key*3 : key * 4],
+        ]
+        guessed_key[key] = sum(compute_edit_distance(a,b) for a,b in combinations(chunks,2)) / key
 
     guessed_key = dict(sorted(guessed_key.items(), key=lambda item: item[1])[:n])
     return guessed_key
@@ -53,7 +58,4 @@ if __name__ == "__main__":
 
 for _, guessed_key in key_guess.items():
     print(guessed_key)
-    print(rep_xor(text.decode(), guessed_key))
-
-key = "Terminator X: Bring the noise"
-print(rep_xor(text.decode(),key).decode())
+    print(rep_xor(text.decode(), guessed_key).decode())
