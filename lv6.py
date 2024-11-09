@@ -10,6 +10,7 @@ def compute_edit_distance(str1, str2):
 
 
 def guess_keys_size(text, n=3):
+    #update for best match (4th)
     guessed_key = {}  # key=key,val=hamming_dist
     for key in range(1, math.floor(len(text) / 2) + 1):
         guessed_key[key] = compute_edit_distance(text[0:key], text[key : key * 2]) / key
@@ -37,7 +38,8 @@ if __name__ == "__main__":
     # print(compute_edit_distance("this is a test".encode(),"wokka wokka!!!".encode()))
     print(len(text))
     key_guess = {}
-    for key_size in guess_keys_size(text):
+    for key_size in guess_keys_size(text,5):
+        print(key_size)
         blocks = get_blocks(text.decode(), key_size)
         transposed_blocks = transpose_blocks(blocks)
         guessed_key = []
@@ -52,3 +54,6 @@ if __name__ == "__main__":
 for _, guessed_key in key_guess.items():
     print(guessed_key)
     print(rep_xor(text.decode(), guessed_key))
+
+key = "Terminator X: Bring the noise"
+print(rep_xor(text.decode(),key))
