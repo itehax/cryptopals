@@ -51,9 +51,9 @@ if __name__ == "__main__":
         key_guess[key_size] = "".join(chr(c) for c in guessed_key)
 
 
-for _, guessed_key in key_guess.items():
-    print(guessed_key)
-    print(rep_xor(text.decode(), guessed_key))
+#for _, guessed_key in key_guess.items():
+    #print(guessed_key)
+    #print(rep_xor(text.decode(), guessed_key))
 
 key = "Terminator X: Bring the noise"
-print(rep_xor(text.decode(),key))
+print(rep_xor(text.decode(),key).decode())
