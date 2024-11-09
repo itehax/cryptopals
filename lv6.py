@@ -8,6 +8,10 @@ def xor_str(str1,str2):
 def xor_byte(str1,key):
     return bytes([ord(c.to_bytes(1,"little")) ^ key for c in str1])
 
+def rep_xor(str1,key):
+    key_len = len(key)
+    return bytes([ord(str1[i]) ^ ord(key[i % key_len]) for i in range(len(str1))])
+
 def chunks(l, n):
     """Yield n number of sequential chunks from l."""
     d, r = divmod(len(l), n)
@@ -87,26 +91,32 @@ for key in range(1,math.floor(len(text) / 2) + 1):
 
 guessed_key = dict(sorted(guessed_key.items(), key=lambda item: item[1])[:4])
 
-key = list(guessed_key.keys())[0]
-print(key)
-#for key in guessed_key.keys():      later generalize!
-number_of_blocks = math.floor(len(text) / key)
-splitted = list(chunks(text,number_of_blocks))
+for key in guessed_key.keys():      
 
-transposed = list()
-for i in range(key):
-    transposed_block = list()
-    for split in splitted:
-        transposed_block.append(split[i].to_bytes(1,"little")) 
-    transposed.append(b''.join(transposed_block))
-#now i have trasposed blocks, for each one i want to find which key could be#to do that 
-#for each block find best matching key (3 best keys)
-keys = {0:list(),1:list(),2:list()}
-for trans in transposed:
-    matches = histograms(ascii_uppercase, xor_byte, english_probability, get_word_probabilities, trans)
-    for count,(k,v) in enumerate(matches.items()):
-        if count < 3:
-            keys[count].append(chr(k))
+    number_of_blocks = math.floor(len(text) / key)
+    splitted = list(chunks(text,number_of_blocks))
 
-keys = list("".join(v) for k,v in keys.items())
-print(keys) #possibile keys for key
+    transposed = list()
+    for i in range(key):
+        transposed_block = list()
+        for split in splitted:
+            transposed_block.append(split[i].to_bytes(1,"little")) 
+        transposed.append(b''.join(transposed_block))
+    #now i have trasposed blocks, for each one i want to find which key could be#to do that 
+    #for each block find best matching key (3 best keys)
+    keys = {}
+    for i in range(3):
+        for k in guessed_key.keys():
+            keys[k,i] = list() #keys with guessed_key len,try(3 try for xor key) ,val = empty list
+
+    for trans in transposed:
+        matches = histograms(ascii_uppercase, xor_byte, english_probability, get_word_probabilities, trans)
+        for count,(k,v) in enumerate(matches.items()):
+            if count < 3:
+                keys[key,count].append(chr(k))
+
+    keys = list("".join(v) for k,v in keys.items())
+
+for keys_guess in keys:
+    if len(keys_guess) > 0:
+        print(rep_xor(text.decode(),keys_guess).decode())
