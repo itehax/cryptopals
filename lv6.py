@@ -11,14 +11,18 @@ def compute_edit_distance(str1, str2):
 
 
 def guess_keys_size(text, n=3):
-    #understeand ksiski
+    # understeand ksiski
     guessed_key = {}  # key=key,val=hamming_dist
     for key in range(1, math.floor(len(text) / 4) + 1):
         chunks = [
-            text[0:key], text[key : key * 2],
-            text[key*2:key*3], text[key*3 : key * 4],
+            text[0:key],
+            text[key : key * 2],
+            text[key * 2 : key * 3],
+            text[key * 3 : key * 4],
         ]
-        guessed_key[key] = sum(compute_edit_distance(a,b) for a,b in combinations(chunks,2)) / key
+        guessed_key[key] = (
+            sum(compute_edit_distance(a, b) for a, b in combinations(chunks, 2)) / key
+        )
 
     guessed_key = dict(sorted(guessed_key.items(), key=lambda item: item[1])[:n])
     return guessed_key
@@ -41,9 +45,8 @@ if __name__ == "__main__":
     f = open("6.txt").read().encode()
     text = base64.b64decode(f)
     # print(compute_edit_distance("this is a test".encode(),"wokka wokka!!!".encode()))
-    print(len(text))
     key_guess = {}
-    for key_size in guess_keys_size(text,3):
+    for key_size in guess_keys_size(text, 1):
         print(key_size)
         blocks = get_blocks(text.decode(), key_size)
         transposed_blocks = transpose_blocks(blocks)
@@ -56,6 +59,6 @@ if __name__ == "__main__":
         key_guess[key_size] = "".join(chr(c) for c in guessed_key)
 
 
-for _, guessed_key in key_guess.items():
-    print(guessed_key)
-    print(rep_xor(text.decode(), guessed_key).decode())
+    for _, guessed_key in key_guess.items():
+        print(guessed_key)
+        print(rep_xor(text.decode(), guessed_key).decode())
