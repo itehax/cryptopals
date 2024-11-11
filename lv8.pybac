@@ -1,0 +1,32 @@
+from lv6 import compute_edit_distance
+from itertools import combinations
+from pwn import *
+
+
+def get_blocks(s, n):
+    return list(map(list, zip(*[iter(s)] * n, strict=True)))
+
+
+def hamming_distance(buf1, buf2):
+    res = 0
+    for b1, b2 in zip(buf1, buf2):
+        res += sum(abs(int(b1) - int(b2)) for b1, b2 in zip(bits_str(b1), bits_str(b2)))
+    return res
+
+
+f = open("8.txt").read().split("\n")[:-1]
+
+words = [bytes.fromhex(w) for w in f]
+
+repetition_guess = {}
+for w in words:
+    blocks = get_blocks(w, 16)
+    dist = 0
+    for x, y in list(combinations(blocks, 2)):
+        dist += hamming_distance(x, y)
+
+    repetition_guess[w] = dist
+
+
+res = dict(sorted(repetition_guess.items(), key=lambda item: item[1])[:3])
+print(res)
