@@ -42,7 +42,7 @@ def transpose_blocks(blocks):
 
 
 if __name__ == "__main__":
-    f = open("6.txt").read().encode()
+    f = open("set/set1/6.txt").read().encode()
     text = base64.b64decode(f)
     # print(compute_edit_distance("this is a test".encode(),"wokka wokka!!!".encode()))
     key_guess = {}
@@ -61,4 +61,4 @@ if __name__ == "__main__":
 
     for _, guessed_key in key_guess.items():
         print(guessed_key)
-        print(rep_xor(text.decode(), guessed_key).decode())
+        print(rep_xor(text, guessed_key.encode()).decode())

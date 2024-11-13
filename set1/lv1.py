@@ -1,5 +1,3 @@
-import base64
-
 
 def hex_to_str(s):
     assert len(s) % 2 == 0

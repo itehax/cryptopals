@@ -1,4 +1,4 @@
-s = open("4.txt").read().split("\n")
+s = open("set/set1/4.txt").read().split("\n")
 
 from lv3 import xor_byte, get_word_probabilities, english_probability, allowed_chars
 

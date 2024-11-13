@@ -3,7 +3,7 @@ from pwn import *
 def get_blocks(s, n):
     return list(zip(*[iter(s)] * n, strict=True))
 
-f = open("8.txt").read().split("\n")[:-1]
+f = open("set/set1/8.txt").read().split("\n")[:-1]
 
 words = [bytes.fromhex(w) for w in f]
 
