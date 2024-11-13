@@ -1,4 +1,5 @@
 from Crypto.Cipher import AES
+import base64
 from lv1 import pkcs_7
 from shared import get_blocks,rep_xor
 
@@ -74,6 +75,6 @@ if __name__ == "__main__":
     decrypted3 = aes_cbc_decrypt_blocks(encrypted3,key,iv)
     print(decrypted3)
     
-    f = open("set/set2/10.txt").read().encode()
+    f = base64.b64decode(open("set/set2/10.txt").read())
     decrypted = aes_cbc_decrypt_blocks(f,key,iv)
-    print(decrypted)
+    print(decrypted.decode())
