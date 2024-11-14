@@ -6,7 +6,8 @@ def pkcs_7(s: str, size):
         return s[:size] + pkcs_7(s[size:], 16)
 
 def un_pkcs_7(s:str,size):
-    return
+    rep = s[len(s) - 1]
+    return s[:-rep]
     
 if __name__ == "__main__":
-    print(pkcs_7(b"YELLOW SUBMARINE", 20))
+    print(pkcs_7(b"YELLOW SUBMARINE", 16))
