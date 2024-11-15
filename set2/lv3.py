@@ -24,15 +24,24 @@ def encryption_oracle(input: bytes):
     else:
         return ("cbc", aes_cbc_encrypt_blocks(input, key, random.randbytes(16)))
 
+def craft_ecb():
+    #48 three blocks, 2 equal of 32 each. if so first input will be aligned to 16,and consecuent block will be A*16 + A*16..
+    return b"a"*48
+
+def guess_ecb(input):
+    #return > 0 => ecb or block cipher. if 0 no.
+    #check for repeated blocks
+    blocks = get_blocks(input,16)
+    equals_blocks = len(blocks) - len(set(blocks))
+    return equals_blocks
+
 
 if __name__ == "__main__":
     for _ in range(1024):
         # the idea,assuming that there is garbage of 5<=len(garbage)<=10 i cant repeat same char in order to have the second and third blockj to encrypt the same char,if is ecb then simmetry.
-        crafted = "a" * 11 + "a" * 16 + "a" * 16
-        oracle = encryption_oracle(crafted.encode())
-        blocks = get_blocks(oracle[1], 16)
+        oracle = encryption_oracle(craft_ecb())
         guess = ""
-        if blocks[1] == blocks[2]:
+        if guess_ecb(oracle[1]) > 0:
             guess = "ecb"
         else:
             guess = "cbc"
