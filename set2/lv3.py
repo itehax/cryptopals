@@ -26,7 +26,8 @@ def encryption_oracle(input: bytes):
 
 def craft_ecb():
     #48 three blocks, 2 equal of 32 each. if so first input will be aligned to 16,and consecuent block will be A*16 + A*16..
-    return b"a"*48
+    #48 because i assume that pad is 16
+    return b"a"*255
 
 def guess_ecb(input):
     #return > 0 => ecb or block cipher. if 0 no.
