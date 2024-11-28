@@ -3,6 +3,7 @@ import random
 from lv1 import pkcs_7
 from lv2 import aes_ecb_encrypt
 from lv3 import guess_ecb, craft_ecb
+import time
 
 enc_key = random.randbytes(16)
 
@@ -49,15 +50,36 @@ def check_ecb_and_get_block_size():
     return None
 
 
-if __name__ == "__main__":
-    block_size = check_ecb_and_get_block_size()
+def break_ecb_oracle(encryption_oracle, block_size):
     text = b""
-
-    for i in reversed(range(block_size)):
-        crafted = b"A" * i + text
-        for guessed_char in range(255 + 1):
-            if (encryption_oracle(b"A"*i)[:block_size] == encryption_oracle(crafted + chr(guessed_char).encode())[:block_size]):
-                text+=chr(guessed_char).encode()
+    for mul in reversed(range(block_size)):
+        crafted = b"A" * mul + text
+        for guessed_char in range(0xFF + 1):
+            if (
+                encryption_oracle(b"A" * mul)[:block_size]
+                == encryption_oracle(crafted + chr(guessed_char).encode())[:block_size]
+            ):
+                text += chr(guessed_char).encode()
                 print(text)
 
-    #working first block_size bytes
+    # working first block_size bytes
+    ctr = 1
+    for i in range(1, int(len(encryption_oracle(b"")) / block_size) + 1):
+        for mul in reversed(range(block_size)):
+            crafted = text[ctr:]
+            for guessed_char in range(0xFF + 1):
+                if (
+                    encryption_oracle(b"A" * mul)[block_size * i : block_size * (i + 1)]
+                    == encryption_oracle(crafted + chr(guessed_char).encode())[
+                        :block_size
+                    ]
+                ):
+                    text += chr(guessed_char).encode()
+                    ctr += 1
+                    print(text)
+    return text
+
+
+if __name__ == "__main__":
+    block_size = check_ecb_and_get_block_size()
+    print(break_ecb_oracle(encryption_oracle, block_size).decode())

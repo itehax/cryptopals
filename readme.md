@@ -1,1 +1,1 @@
-add writeup and notes
+todo:add writeup and notes,first learn then improve code quality/speed
