@@ -11,7 +11,6 @@ def un_pkcs_7(s: bytes):
         and s.endswith(bytes([rep]) * rep) 
     ):
         return s[:-rep]
-    raise
 
 
 if __name__ == "__main__":
