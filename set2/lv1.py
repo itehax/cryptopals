@@ -19,4 +19,5 @@ if __name__ == "__main__":
 
     print(pkcs_7(b"",4))
     print(pkcs_7(b"&role=admin",16))
+    print(pkcs_7(b"",1))
     #un_pkcs_7(b"a" * 14 + b"\x03\xff")
