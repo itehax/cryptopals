@@ -31,6 +31,8 @@ def guess_block_size(input):
 # which is going to be the first block of padding oracle, this only if block size is correct,knowing that enc_key is the same for every block make it works.
 
 #finish
+#idea here,last padded still contain last bytes of padding
+#i want to craft a blocks in which a block is my padding so i can compare. eg pass as input postfix*n so one block aligned maybe
 def check_ecb_and_get_block_size():
     if guess_ecb(encryption_oracle(craft_ecb())) > 0:  # is  ecb
         for guessed_size in guess_block_size(encryption_oracle(b"")):

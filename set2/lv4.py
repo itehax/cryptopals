@@ -16,38 +16,26 @@ def encryption_oracle(input: bytes):
     return aes_ecb_encrypt(input, enc_key)
 
 
-def guess_block_size(input):
-    # no input cause enc_oracle will return a str
-    guess = list()
-    len_res = len(input)
-    # assume block size <= 16
-    for i in range(1, 16 + 1):
-        if len_res % i == 0:
-            guess.append(i)
-    return guess
 
 
-# check for ecb and return block size(useless but for poc)
-# idea is that at max after guessed_size* a , last block will be only padding, so i'm going to check if last block == encryptedd(pkcs("",guessed))
-# which is going to be the first block of padding oracle, this only if block size is correct,knowing that enc_key is the same for every block make it works.
 
-
-def check_ecb_and_get_block_size():
-    if guess_ecb(encryption_oracle(craft_ecb())) > 0:  # is  ecb
-        for guessed_size in guess_block_size(encryption_oracle(b"")):
-            for i in range(guessed_size + 1):
-                if encryption_oracle(b"a" * i).endswith(
-                    encryption_oracle(pkcs_7(b"", guessed_size))[:guessed_size]
-                ):
-                    # using this, i can know the size of cipherthext,why? now i know the size of last chunk,which is all padded
-                    # i also know "a"*i.now cipher = "A"*i + actual_text + pad => len(actual_text) = len(cipher) - i - pad_size
-                    print(
-                        "Guessed text size: "
-                        + str((len(encryption_oracle(b"a" * i)) - guessed_size - i))
-                    )
-
-                    return guessed_size
-    return None
+#idea is that after "A" is repeated c times, the size of the ciphertext,is going to change(last block full padded,by knowing that i can discover size by doing len(initial_cipher) - c )
+def check_ecb_and_get_block_size(encryption_oracle):
+    base = encryption_oracle(b"")
+    start_len = len(base)
+    block_size = None 
+    for c in range(1,16+1): #assume max block size is 16
+        cipher_len = len(encryption_oracle(b"A"*c))
+        if cipher_len > start_len:
+            block_size = cipher_len - start_len 
+            if guess_ecb(encryption_oracle(craft_ecb()),block_size) > 0:
+                print("ECB detected!")
+                print(f"Size of cipherthext is: {cipher_len - block_size - c}")
+                return block_size
+    
+    return None 
+        
+   
 
 
 def break_ecb_oracle(encryption_oracle, block_size):
@@ -81,5 +69,5 @@ def break_ecb_oracle(encryption_oracle, block_size):
 
 
 if __name__ == "__main__":
-    block_size = check_ecb_and_get_block_size()
+    block_size = check_ecb_and_get_block_size(encryption_oracle)
     print(break_ecb_oracle(encryption_oracle, block_size).decode())

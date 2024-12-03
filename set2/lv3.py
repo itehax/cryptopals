@@ -29,10 +29,11 @@ def craft_ecb():
     #48 because i assume that pad is 16
     return b"a"*255
 
-def guess_ecb(input):
+def guess_ecb(input,block_size):
+    #fix for generic pad size?
     #return > 0 => ecb or block cipher. if 0 no.
     #check for repeated blocks
-    blocks = get_blocks(input,16)
+    blocks = get_blocks(input,block_size)
     equals_blocks = len(blocks) - len(set(blocks))
     return equals_blocks
 
@@ -42,7 +43,7 @@ if __name__ == "__main__":
         # the idea,assuming that there is garbage of 5<=len(garbage)<=10 i cant repeat same char in order to have the second and third blockj to encrypt the same char,if is ecb then simmetry.
         oracle = encryption_oracle(craft_ecb())
         guess = ""
-        if guess_ecb(oracle[1]) > 0:
+        if guess_ecb(oracle[1],16) > 0:
             guess = "ecb"
         else:
             guess = "cbc"
