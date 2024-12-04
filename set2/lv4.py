@@ -52,7 +52,7 @@ def break_ecb_oracle(encryption_oracle, block_size):
 
     # working first block_size bytes
     ctr = 1
-    for i in range(1, int(len(encryption_oracle(b"")) / block_size) + 1):
+    for i in range(1, int(len(encryption_oracle(b"")) / block_size) + 1):#use i as displacement for 2nd to last block
         for mul in reversed(range(block_size)):
             crafted = text[ctr:]
             for guessed_char in range(0xFF + 1):
