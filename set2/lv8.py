@@ -1,7 +1,7 @@
 import random
 from lv2 import aes_cbc_decrypt_blocks, aes_cbc_encrypt_blocks
 from lv1 import pkcs_7, un_pkcs_7
-from Crypto.Cipher import AES
+from shared import get_blocks, rep_xor
 
 aes_key = random.randbytes(16)
 iv = random.randbytes(16)
@@ -18,10 +18,26 @@ def encrypt_user(input: bytes):
 def check_admin(input: bytes):
     user = un_pkcs_7(aes_cbc_decrypt_blocks(input, aes_key, iv))
     print(user)
-    return user.find(b";admin=true;") 
+    return user.find(b";admin=true;")
+
+
+def cbc_bitflipping():
+    second_plaintext = (
+        b"A" * 16
+    )  # len is 16,in this case this is the third block of plain,so gonna break 4th
+    crafted = b"A" * 32
+    encrypted = encrypt_user(crafted)
+    second_ciphertext = encrypted[32:48]
+    wanted = b"a" * 5 + b";admin=true"  # len is 16
+
+    crafted_encrypted = (
+        encrypted[0:32]
+        + rep_xor(rep_xor(second_ciphertext, wanted), crafted)
+        + encrypted[48:]
+    )
+    return check_admin(crafted_encrypted)
 
 
 if __name__ == "__main__":
-    if check_admin(encrypt_user(b"ciao;admin=true")) != -1:
-        #break this
-        print("correctly authed!")
+    if cbc_bitflipping() != -1:
+        print("Successfully authenticated")

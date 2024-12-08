@@ -44,8 +44,8 @@ def check_ecb(encryption_oracle):
 
 def break_ecb_oracle_with_rand_bytes_before(encryption_oracle, block_size,len_rand_bytes):
     #first block
-    #in this case i want to fill the first block with garbage,and do same attack starting with the second one,basically im skipping rand bytes
-    to_fill = block_size - len_rand_bytes
+    to_fill = block_size - len_rand_bytes #here differently from previous i need to add less bytes becase i already have some
+    
     fill_first_block = b"A"*to_fill
     text = b""
     for mul in reversed(range(block_size)):
